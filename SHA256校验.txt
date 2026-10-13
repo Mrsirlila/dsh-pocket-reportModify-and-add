@@ -1,8 +1,8 @@
-DSH 掌上版 1.33 · 文件校验
+DSH 掌上版 1.34 · 文件校验
 ============================
 
-SHA-256 (DSH掌上版-1.33.apk):
-2cbf1dcaec419303efdf92896aa0d6918bdde1d29a02a39c455e6cfa12896fcd
+SHA-256 (DSH掌上版-1.34.apk):
+1432cc28c68bd5e0cc4a84030d652aa4425a4063811b79c20586c3550dbdaefe
 
 文件大小: 597838 字节
 
@@ -10,6 +10,6 @@ SHA-256 (DSH掌上版-1.33.apk):
 【怎么用】
 想知道手上的安装包有没有下载损坏或被换过，核对上面这串值：
 
-  Windows 命令提示符：  certutil -hashfile DSH掌上版-1.33.apk SHA256
+  Windows 命令提示符：  certutil -hashfile DSH掌上版-1.34.apk SHA256
 
 输出的那串字母数字与上面完全一致，就说明文件完好。
