@@ -1,0 +1,63 @@
+dsh-pocket 插件 · 已打补丁版 · 安装说明
+================================================
+
+【这是什么】
+这是 dsh-pocket 插件（原版 v2.11.0，GPL-2.0）的一份副本，
+在上面打了两处改动，为的是让配套的手机 App 「DSH 掌上版」用得顺一点。
+
+没打这两个补丁也能用，只是体验会差一截（见文末对照表）。
+
+【装之前】
+电脑上要已经有 DSH，并且能在终端跑 `dsh` 命令。
+没装的话先装：npm install -g @deepseek-ai/dsh
+
+【安装步骤】
+1) 先把 dsh-pocket 正常装上（用官方源装一次，作为"位置模板"）：
+     dsh plugin --profile web add dsh-pocket -w
+
+2) 找到它的安装位置：
+     Windows:  %USERPROFILE%\.dsh\profiles\web\node_modules\dsh-pocket
+     macOS/Linux:  ~/.dsh/profiles/web/node_modules/dsh-pocket
+   如果上面的路径不存在（比如你用的不是 web 这个 profile），
+   可以直接搜一下：
+     Windows:      dir /s /b %USERPROFILE%\.dsh\dsh-pocket\package.json
+     macOS/Linux:  find ~/.dsh -path "*dsh-pocket/package.json"
+
+3) 把本目录（dsh-pocket插件-已打补丁）里的所有文件，
+   覆盖到第 2 步找到的那个 dsh-pocket 目录里。
+
+4) 重启 DSH：
+     关掉正在跑的 dsh web，然后重新启动它。
+
+5) 验证：打开 DSH 设置 →「手机访问」，能看到二维码和开关就对了。
+
+【重要：以后别再自动升级这个插件】
+   执行 `dsh plugin --profile web update dsh-pocket` 会把本补丁冲掉。
+   真要升级，升级完之后按上面第 3 步重新覆盖一次即可。
+
+【这两处改动是干什么的】
+
+① 二维码里带上访问密码
+   文件：lib/service.mjs
+   原版二维码只编了地址。而公网密码每次开启公网都会轮换，
+   扫完还得手动抄密码，下次开公网又要重抄。改成一起编进去后，扫一次直达。
+
+② 增加 /dsh-pocket/entry.json 端点
+   文件：lib/service.mjs、lib/index.js
+   手机 App 靠它在你连着局域网时，自动把当前公网地址和密码取回手机。
+   没有它，公网地址一变就得重新扫码（而扫码必须人坐在电脑旁边）。
+
+（原第三处：公网隧道"自动恢复"失效 —— 上游 v2.11.0 已自己修好，
+   本副本不再需要改它，所以现在的补丁只有上面两处。）
+
+【没打补丁会怎样】
+   ① 没有 → 扫码只拿到地址，密码要手抄；密码轮换后每次都要重抄
+   ② 没有 → 公网地址变了必须重新扫码（得人在电脑旁才能扫）
+   （原来的第三处上游已修，不需要补丁了 —— DSH 重启后公网入口会自己回来）
+
+   只在家里用局域网的话，这两处也用不上，原版就够了。
+
+【许可】
+  本副本基于 dsh-pocket v2.11.0，原项目以 GPL-2.0 分发。
+   改动明细见同目录的「本地修改声明.md」。
+   本副本同样以 GPL-2.0 分发，完整源码即本目录。
