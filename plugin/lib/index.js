@@ -115,6 +115,15 @@ export function tokenForHost(host) {
   if (isLanOverrideHost(host)) return getLanToken();
   return classifyHost(host) === 'public' ? getAccessToken() : getLanToken();
 }
+
+/**
+ * 登录页凭据语义：长期有效的 PIN 允许密码管理器保存；Quick Tunnel 自动生成的
+ * 公网 PIN 每次隧道开启都会轮换，不应作为长期密码保存。
+ */
+export function credentialKindForHost(host) {
+  if (isLanOverrideHost(host) || classifyHost(host) !== 'public') return 'persistent';
+  return pinCustom('public') || tunnelMode() === 'named' ? 'persistent' : 'ephemeral';
+}
 /** 去掉 Host 的端口（与 classifyHost 一致），用于和手动设置的局域网地址比较。 */
 function hostNameOnly(host) {
   let name = String(host ?? '').trim().toLowerCase();
@@ -142,6 +151,11 @@ export function isLanOverrideHost(host) {
  */
 export function setCustomPin(which, value) {
   const v = String(value ?? '').trim();
+  if (v === '') {
+    setPinCustom(which, false);
+    if (which === 'public') return writePinToFile(tokenPath(), newPin());
+    if (which === 'lan') return writePinToFile(lanTokenPath(), newPin());
+  }
   if (!PIN_RE.test(v)) throw new Error('密码必须是 8–64 位英文字母或数字 | PIN must be 8–64 characters (letters and digits only)');
   if (which === 'public') {
     writePinToFile(tokenPath(), v);
@@ -259,12 +273,17 @@ export function apply(ctx, config = {}, internals = {}) {
   }
 
   // 桌面端环境识别（官方兼容模式，见 desktop 的 plugin-development.md）：
-  // desktopProfiles / desktopPnpm 只在 DSH Desktop（Electron）里存在。
-  // 桌面端有自己的更新/进程管理，我们这两项功能在此环境**关闭**（不删除），
-  // 避免与 desktopPnpm / Electron 进程模型冲突；扫码同屏等正常功能照常。
+  // 旧判定只认 desktopProfiles / desktopPnpm 两个 ctx 服务，但 dsh-desktop-host
+  // 0.2.0-rc.2 起不再提供（改名/移除），导致桌面版被误判为非桌面 → 重启/更新拦截失效
+  // （issue #177 / #167：pocketRestart 杀宿主、拉孤儿进程抢端口 EADDRINUSE）。
+  // 现改为优先用 Electron 运行时特征（process.versions.electron / ELECTRON_RUN_AS_NODE），
+  // 再回退到旧的 ctx 服务名；宿主仍可用 internals.isDesktop 显式下发。
   const isDesktop = internals.isDesktop !== undefined
     ? internals.isDesktop === true
-    : ctx.get?.('desktopProfiles') !== undefined || ctx.get?.('desktopPnpm') !== undefined;
+    : Boolean(process.versions.electron)
+      || process.env.ELECTRON_RUN_AS_NODE !== undefined
+      || ctx.get?.('desktopProfiles') !== undefined
+      || ctx.get?.('desktopPnpm') !== undefined;
   if (isDesktop) {
     logger.info('dsh-pocket: DSH Desktop detected — update/restart disabled here | 检测到桌面端环境，更新/重启已关闭');
   }
@@ -313,6 +332,7 @@ export function apply(ctx, config = {}, internals = {}) {
       // dsh web 重启/更新后 sessionKey 变化 → 手机需重新输入
       sessionKey: randomBytes(16).toString('hex'),
       getToken: (host) => tokenForHost(host),
+      getCredentialKind: (host) => credentialKindForHost(host),
       isProtected: (host) => {
         if (isLanOverrideHost(host)) return lanAuthEnabled();
         return classifyHost(host) === 'public' ? true : lanAuthEnabled();
@@ -406,7 +426,6 @@ export function apply(ctx, config = {}, internals = {}) {
     },
   });
   if (disposeEntryRoute) disposers.push(disposeEntryRoute);
-
 
   // 代理随插件自动启动（局域网二维码开箱即用，零配置）
   void service.startProxy().then((proxy) => {

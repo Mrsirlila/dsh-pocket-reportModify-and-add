@@ -10,9 +10,11 @@ window.__ModuleLoader__.load({
     // the bundle must bind React itself - otherwise every mobile component
     // crashes at render time with "ReferenceError: React is not defined".
     var React = require("react");
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name2 in all)
@@ -26,6 +28,14 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // client/index.jsx
@@ -109,7 +119,66 @@ function redactStatus(s) {
 }
 
 // client/mobile/MobileNavToggle.tsx
-var import_dsh_client_ui_primitives = require("@deepseek-ai/dsh-client-ui-primitives");
+var primitives = __toESM(require("@deepseek-ai/dsh-client-ui-primitives"), 1);
+
+// client/mobile/icon-compat.mjs
+var MOBILE_ICON_CANDIDATES = {
+  panelLeft: [
+    "IconPanelLeftOutlineRegular",
+    "IconPanelLeftOutlineMedium",
+    "IconPanelLeftOutline16",
+    "IconPanelLeftOutline"
+  ],
+  download: [
+    "IconDownloadOutlineRegular",
+    "IconDownloadOutlineMedium",
+    "IconDownloadOutline16",
+    "IconDownloadOutline"
+  ],
+  folderOpen: [
+    "IconFolderOpenOutlineRegular",
+    "IconFolderOpenOutlineMedium",
+    "IconFolderOpenOutline16",
+    "IconFolderOpenOutline",
+    "IconFolderOpen"
+  ]
+};
+var MOBILE_ICON_FALLBACK = {
+  panelLeft: "\u2630",
+  download: "\u2913",
+  folderOpen: "\u25A4"
+};
+function isRenderableIcon(value) {
+  if (typeof value === "function") return true;
+  return typeof value === "object" && value !== null;
+}
+function pickIcon(registry, names) {
+  if (registry === null || typeof registry !== "object") return null;
+  for (const name2 of names) {
+    const candidate = registry[name2];
+    if (isRenderableIcon(candidate)) return candidate;
+  }
+  return null;
+}
+function resolveMobileIcons(registry) {
+  const resolved = {};
+  for (const [key, names] of Object.entries(MOBILE_ICON_CANDIDATES)) {
+    resolved[key] = pickIcon(registry, names);
+  }
+  return resolved;
+}
+
+// client/mobile/MobileIcon.tsx
+function MobileIcon({ icon, name: name2, size }) {
+  if (!isRenderableIcon(icon)) {
+    return /* @__PURE__ */ React.createElement("span", { "data-mobile-nav": "icon-fallback", "aria-hidden": "true", style: { fontSize: size, lineHeight: 1 } }, MOBILE_ICON_FALLBACK[name2]);
+  }
+  const Icon = icon;
+  return /* @__PURE__ */ React.createElement(Icon, { size });
+}
+
+// client/mobile/MobileNavToggle.tsx
+var icons = resolveMobileIcons(primitives);
 function MobileNavToggle({ toggleSidebar, t }) {
   const toggleExplorer = () => {
     const frame = document.querySelector('[data-mobile-nav="frame"]');
@@ -129,7 +198,7 @@ function MobileNavToggle({ toggleSidebar, t }) {
       title: t("open"),
       onClick: () => toggleSidebar()
     },
-    /* @__PURE__ */ React.createElement(import_dsh_client_ui_primitives.IconPanelLeftOutline16, { size: 16 })
+    /* @__PURE__ */ React.createElement(MobileIcon, { icon: icons.panelLeft, name: "panelLeft", size: 16 })
   ), /* @__PURE__ */ React.createElement(
     "button",
     {
@@ -139,13 +208,13 @@ function MobileNavToggle({ toggleSidebar, t }) {
       title: t("files"),
       onClick: toggleExplorer
     },
-    /* @__PURE__ */ React.createElement(import_dsh_client_ui_primitives.IconFolderOpenOutline16, { size: 16 })
+    /* @__PURE__ */ React.createElement(MobileIcon, { icon: icons.folderOpen, name: "folderOpen", size: 16 })
   ));
 }
 
 // client/mobile/MobileNavOverlay.tsx
 var import_react = require("react");
-var import_dsh_client_ui_primitives2 = require("@deepseek-ai/dsh-client-ui-primitives");
+var primitives2 = __toESM(require("@deepseek-ai/dsh-client-ui-primitives"), 1);
 
 // client/mobile/nav-targets.mjs
 var DRAWER_SELECTOR = '[data-mobile-nav="frame"] > :first-child';
@@ -181,6 +250,7 @@ function isOverlayTap(target) {
 }
 
 // client/mobile/MobileNavOverlay.tsx
+var icons2 = resolveMobileIcons(primitives2);
 var MOBILE_QUERY = "(max-width: 1023px)";
 function useMobile() {
   const [mobile, setMobile] = (0, import_react.useState)(() => window.matchMedia(MOBILE_QUERY).matches);
@@ -367,12 +437,13 @@ function MobileNavOverlay({ toggleSidebar, t }) {
       title: t("open"),
       onClick: () => toggleSidebar()
     },
-    /* @__PURE__ */ React.createElement(import_dsh_client_ui_primitives2.IconPanelLeftOutline16, { size: 18 })
+    /* @__PURE__ */ React.createElement(MobileIcon, { icon: icons2.panelLeft, name: "panelLeft", size: 18 })
   ));
 }
 
 // client/mobile/MobileDrawerFooter.tsx
-var import_dsh_client_ui_primitives3 = require("@deepseek-ai/dsh-client-ui-primitives");
+var primitives3 = __toESM(require("@deepseek-ai/dsh-client-ui-primitives"), 1);
+var icons3 = resolveMobileIcons(primitives3);
 function MobileDrawerFooter({ useSessions, downloadSessionLog, toggleSidebar, t }) {
   const sessionId = useSessions((state) => state.current);
   const openExplorer = () => {
@@ -388,7 +459,7 @@ function MobileDrawerFooter({ useSessions, downloadSessionLog, toggleSidebar, t 
       title: t("files"),
       onClick: openExplorer
     },
-    /* @__PURE__ */ React.createElement(import_dsh_client_ui_primitives3.IconPanelLeftOutline16, { size: 14 }),
+    /* @__PURE__ */ React.createElement(MobileIcon, { icon: icons3.panelLeft, name: "panelLeft", size: 14 }),
     /* @__PURE__ */ React.createElement("span", null, t("files"))
   ), /* @__PURE__ */ React.createElement(
     "button",
@@ -402,7 +473,7 @@ function MobileDrawerFooter({ useSessions, downloadSessionLog, toggleSidebar, t 
         if (sessionId !== void 0) downloadSessionLog(sessionId);
       }
     },
-    /* @__PURE__ */ React.createElement(import_dsh_client_ui_primitives3.IconDownloadOutline16, { size: 14 }),
+    /* @__PURE__ */ React.createElement(MobileIcon, { icon: icons3.download, name: "download", size: 14 }),
     /* @__PURE__ */ React.createElement("span", null, t("sessionLog"))
   ));
 }
@@ -910,11 +981,15 @@ var MOBILE_CSS = `
   }
 
   /* --- Composer bottom row on mobile ---
-     Keep add, permission, model, reasoning and send controls on one line at
-     the Honor 50's 360px CSS viewport. DSH's stable data-composer-card hook
-     survives the editor's textarea -> contenteditable migration. */
+     Let the row wrap instead of locking it to one line (issue #170): any
+     plugin can register extra non-shrinking controls here, and a hard
+     "nowrap" plus ":last-child { flex:1 1 0 }" squeezed the model pill (long
+     text, max-width:220px upstream) down to 0 width at 360px. Allowing
+     wrap keeps every control visible; the row simply spans two lines on
+     narrow screens. DSH's stable data-composer-card hook survives the
+     editor's textarea -> contenteditable migration. */
   [data-phase] [data-composer-card="true"] > [class$="_row"] {
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     gap: 6px !important;
   }
   [data-phase] [data-composer-card="true"] > [class$="_row"] > :first-child {
@@ -924,11 +999,6 @@ var MOBILE_CSS = `
   [data-phase] [data-composer-card="true"] > [class$="_row"] > :first-child > :nth-child(2) {
     flex: 0 1 auto !important;
     min-width: 0 !important;
-  }
-  [data-phase] [data-composer-card="true"] > [class$="_row"] > :last-child {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    gap: 6px !important;
   }
 
   /* --- Composer popups as bottom sheets on mobile ---
@@ -1408,7 +1478,17 @@ var MOBILE_CSS = `
      so a skin/operator plugin can legally reclaim this 28px band by
      setting document.body.dataset.pocketStats = 'off' (avoids the
      !important weight war that let two footers print on top of each
-     other \u2014 issue #165). Default behavior is unchanged. */
+     other \u2014 issue #165). Default behavior is unchanged.
+
+     Opt-out is two halves, not one. The rules above only stand pocket's
+     styling down; the row itself is the CORE's (conversation StatsPills
+     dock), so it keeps occupying the band with the core's own styling and
+     still collides with whoever took the band over (issue #172).
+     [data-mobile-nav="stats"] is a mark pocket writes itself
+     (mobile-apply.tsx), so opting out hides that element too \u2014 together with
+     the core readouts it carries (turns / steps / LLM time / TTFT / cache) and
+     the TPS figure pocket folds into it. That is what reclaiming the band
+     costs: whoever takes it over renders their own footer. */
 
   body:not([data-pocket-stats="off"]) [data-mobile-nav="stats"] {
     display: flex !important;
@@ -1459,6 +1539,18 @@ var MOBILE_CSS = `
   }
   body:not([data-pocket-stats="off"]) [data-mobile-nav="stats"] * {
     white-space: nowrap !important;
+  }
+
+  /* The other half of that opt-out: standing pocket's styling down leaves
+     the core's own row in the band, so a skin that took the band over still
+     prints underneath it (issue #172). [data-mobile-nav="stats"] is a mark
+     pocket writes itself (mobile-apply.tsx) \u2014 opting out hides it with the
+     mark, and with it the core readouts that row carries. The default path
+     never matches this rule.
+     (A skin that wants the band *and* the row can take it back with an equally
+     specific rule plus !important \u2014 this rule carries no extra specificity.) */
+  body[data-pocket-stats="off"] [data-mobile-nav="stats"] {
+    display: none !important;
   }
 
   /* ---------- hero composer on mobile ----------
@@ -2414,9 +2506,9 @@ function PocketSettingsTab({ rpcCall, t }) {
   const Switch = (on, onClick) => (0, import_react2.createElement)("button", {
     role: "switch",
     "aria-checked": !!on,
-    style: { flexShrink: 0, width: 40, height: 22, borderRadius: 11, border: "none", padding: 0, position: "relative", cursor: "pointer", font: "inherit", background: on ? "var(--dsw-alias-button-primary-fill, var(--dsw-alias-brand-primary,#4f6ef7))" : "var(--dsw-alias-border-l2,#d1d5db)" },
+    style: { boxSizing: "border-box", flexShrink: 0, width: 36, height: 20, padding: 2, border: 0, borderRadius: 999, cornerShape: "round", position: "relative", cursor: "pointer", font: "inherit", background: on ? "var(--dsw-alias-brand-primary, #e6e8eb)" : "var(--dsw-alias-border-l3, #3a3f46)", transition: "background 120ms ease" },
     onClick
-  }, (0, import_react2.createElement)("span", { style: { position: "absolute", top: 2, left: on ? 20 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff" } }));
+  }, (0, import_react2.createElement)("span", { style: { display: "block", width: 16, height: 16, borderRadius: "50%", cornerShape: "round", background: on ? "var(--dsw-alias-label-primary-foreground, #0f1115)" : "var(--dsw-alias-switch-thumb, #8b9198)", transition: "transform 120ms ease", transform: on ? "translateX(16px)" : "translateX(0)" } }));
   const qrArea = (src, url, hint) => (0, import_react2.createElement)(
     "div",
     { style: { background: "var(--dsw-alias-bg-layer-2,#f3f4f6)", borderRadius: 10, padding: "10px 12px", textAlign: "center", margin: "10px 0" } },

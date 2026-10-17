@@ -376,9 +376,9 @@ function PocketSettingsTab({ rpcCall, t }) {
   // iOS 风格小开关（重排后统一用：局域网总开关 / 局域网密码开关）
   const Switch = (on, onClick) => h('button', {
     role: 'switch', 'aria-checked': !!on,
-    style: { flexShrink: 0, width: 40, height: 22, borderRadius: 11, border: 'none', padding: 0, position: 'relative', cursor: 'pointer', font: 'inherit', background: on ? 'var(--dsw-alias-button-primary-fill, var(--dsw-alias-brand-primary,#4f6ef7))' : 'var(--dsw-alias-border-l2,#d1d5db)' },
+    style: { boxSizing: 'border-box', flexShrink: 0, width: 36, height: 20, padding: 2, border: 0, borderRadius: 999, cornerShape: 'round', position: 'relative', cursor: 'pointer', font: 'inherit', background: on ? 'var(--dsw-alias-brand-primary, #e6e8eb)' : 'var(--dsw-alias-border-l3, #3a3f46)', transition: 'background 120ms ease' },
     onClick,
-  }, h('span', { style: { position: 'absolute', top: 2, left: on ? 20 : 2, width: 18, height: 18, borderRadius: '50%', background: '#fff' } }));
+  }, h('span', { style: { display: 'block', width: 16, height: 16, borderRadius: '50%', cornerShape: 'round', background: on ? 'var(--dsw-alias-label-primary-foreground, #0f1115)' : 'var(--dsw-alias-switch-thumb, #8b9198)', transition: 'transform 120ms ease', transform: on ? 'translateX(16px)' : 'translateX(0)' } }));
   // 卡片内主内容：二维码 + 地址 + 提示
   const qrArea = (src, url, hint) => h('div', { style: { background: 'var(--dsw-alias-bg-layer-2,#f3f4f6)', borderRadius: 10, padding: '10px 12px', textAlign: 'center', margin: '10px 0' } },
     h('img', { src, alt: 'QR', style: styles.qr }),

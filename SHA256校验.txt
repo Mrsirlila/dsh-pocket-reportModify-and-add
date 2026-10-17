@@ -6,10 +6,16 @@ f5b59010d02bf69da63205cba176e42054d61e2820cf5bfdd3c4fced6e4de43d
 
 文件大小: 600130 字节
 
+SHA-256 (dsh-pocket插件-已打补丁.zip):
+58efa8e4d2dbd9e66004cd91ea034593dc097c13dc2c46f44cced98ab10f2282
+
+文件大小: 205276 字节
+
 
 【怎么用】
 想知道手上的安装包有没有下载损坏或被换过，核对上面这串值：
 
   Windows 命令提示符：  certutil -hashfile DSH掌上版-1.37.apk SHA256
+  Windows 命令提示符：  certutil -hashfile dsh-pocket插件-已打补丁.zip SHA256
 
 输出的那串字母数字与上面完全一致，就说明文件完好。

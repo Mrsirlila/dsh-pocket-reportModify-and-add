@@ -151,6 +151,11 @@ npx @deepseek-ai/dsh web
 这类工具会接管全部流量，并常常把 cloudflared 的隧道边缘连接
 （`*.argotunnel.com`、Cloudflare 边缘 IP）掐断，导致隧道注册成功但数据面连不上。
 
+**另一类隐蔽根因：shell 里的 `HTTP_PROXY` / `HTTPS_PROXY` 环境变量**（指向 `127.0.0.1` 的本地拦截代理）。
+即使你关掉了 TUN 模式、系统级代理也显示关闭，只要终端启动时注入了这些 env 变量，
+`dsh web` 启动后 spawn 的 cloudflared 会**继承**它们，把隧道边缘连接绕进本地代理 → 同样 1033。
+**v2.11.1 起 pocket 在启动 cloudflared 时会主动剥离这些代理变量，从根上规避**；旧版本需手动处理（见下）。
+
 **解决（从轻到重，按顺序试）**：
 
 1. 先**只关闭代理的 TUN 模式**，不用退出代理软件——多数情况这一步就够：
