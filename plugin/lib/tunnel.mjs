@@ -466,6 +466,11 @@ export async function startNamedTunnel({ token, home, signal, onPhase = () => {}
   const child = spawn(bin, ['--no-autoupdate', 'tunnel', 'run', '--protocol', 'http2'], {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: cloudflaredEnv({ TUNNEL_TOKEN: String(token ?? '') }),
+    // Windows：宿主 dsh 是无控制台的分离进程，而 cloudflared 是 CUI 程序；
+    // 不传 windowsHide 时 Windows 会为它新建一个可见的控制台窗口（用户看到的「cmd 弹窗」），
+    // 关闭该窗口 = 向 cloudflared 发 CTRL_CLOSE，隧道进程随即退出 → 界面报「隧道进程退出」。
+    // windowsHide 只影响 Windows，其它平台无副作用。
+    windowsHide: true,
   });
   let cleanup = null;
   let rejectErr = null;
@@ -556,6 +561,11 @@ export async function startQuickTunnel({ port, home, signal, onPhase = () => {} 
   const child = spawn(bin, ['--no-autoupdate', 'tunnel', '--url', `http://127.0.0.1:${port}`, '--protocol', 'http2'], {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: cloudflaredEnv(),
+    // Windows：宿主 dsh 是无控制台的分离进程，而 cloudflared 是 CUI 程序；
+    // 不传 windowsHide 时 Windows 会为它新建一个可见的控制台窗口（用户看到的「cmd 弹窗」），
+    // 关闭该窗口 = 向 cloudflared 发 CTRL_CLOSE，隧道进程随即退出 → 界面报「隧道进程退出」。
+    // windowsHide 只影响 Windows，其它平台无副作用。
+    windowsHide: true,
   });
   // H1：spawn 失败（缓存二进制损坏等）必须接住，否则 uncaughtException 崩宿主
   child.on('error', (err) => {

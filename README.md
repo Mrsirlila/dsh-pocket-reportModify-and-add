@@ -13,6 +13,8 @@ https://www.bilibili.com/video/BV1XaeU65EHJ
 
 3.新增能使用手机发送文件给DSH,更方便在手机端使用
 
+4.修复 2.11.0 打开公网莫名其妙有个 CMD 弹窗的 BUG（那个弹窗一关，公网就断）
+
 ---
 
 ## 下载（当前版本 1.37）
@@ -24,11 +26,16 @@ https://www.bilibili.com/video/BV1XaeU65EHJ
 | [`使用说明.txt`](使用说明.txt) | — | App 的用法 + 完整更新记录 |
 | [`先读我-包内容说明.txt`](先读我-包内容说明.txt) | — | 整个包的导读 |
 | [`SHA256校验.txt`](SHA256校验.txt) | — | APK 与插件包校验值，下载后可比对 |
-| [`plugin/`](plugin/) | — | 上面那个 zip 的原样源码目录（基于上游 v2.12.0 的两处改动），方便直接看代码与 diff |
+| [`plugin/`](plugin/) | — | 上面那个 zip 的原样源码目录（基于上游 v2.12.0 的三处改动），方便直接看代码与 diff |
 
 App 是「壳」，插件是「门」，**两边要配对使用**：只装 App 不装插件，App 没有东西可连。
 
-本版插件基于上游 **v2.12.0**，只改了两处（二维码自动带上访问密码、新增 `/dsh-pocket/entry.json` 入口信息接口），
+本版插件基于上游 **v2.12.0**，改了三处：
+
+1. 二维码自动带上访问密码（`lib/service.mjs`）
+2. 新增 `/dsh-pocket/entry.json` 入口信息接口（`lib/service.mjs`、`lib/index.js`）
+3. **修复 Windows 上开公网弹控制台黑框、关掉黑框隧道即断的问题**（`lib/tunnel.mjs` 两处 `spawn` 补 `windowsHide: true`）
+
 明细见 [`plugin/本地修改声明.md`](plugin/本地修改声明.md)。
 
 ## 许可与来源声明

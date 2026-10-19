@@ -105,6 +105,8 @@ export function restartHost({ handoffMs = 1500, internals = {} } = {}) {
       detached: true,
       stdio: 'ignore',
       env: process.env,
+      // Windows：无控制台宿主里起 CUI 子进程，不隐藏会闪一个控制台窗口
+      windowsHide: true,
     });
     helper.unref?.();
     helper.on?.('error', () => {}); // 参数异常等异步错误兜底，别让旧进程先崩

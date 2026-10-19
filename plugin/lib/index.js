@@ -238,6 +238,8 @@ function performUpdate(profile, { timeoutMs = 180_000 } = {}) {
       // Windows 上裸 spawn('dsh') 解析到无扩展名 POSIX shim → ENOENT；
       // Node 22+ 直接 spawn .cmd 会 EINVAL（CVE-2024-27980），必须走 shell（PR #54）
       shell: process.platform === 'win32',
+      // Windows：shell 会拉起 cmd.exe（CUI），不隐藏会闪一个控制台窗口
+      windowsHide: true,
     });
     let out = '';
     const onData = (c) => { out += String(c); if (out.length > 4000) out = out.slice(-4000); };

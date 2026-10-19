@@ -7,9 +7,9 @@ f5b59010d02bf69da63205cba176e42054d61e2820cf5bfdd3c4fced6e4de43d
 文件大小: 600130 字节
 
 SHA-256 (dsh-pocket插件-已打补丁.zip):
-58efa8e4d2dbd9e66004cd91ea034593dc097c13dc2c46f44cced98ab10f2282
+4b6129ce7f78682cd74dd8d7dc12bfd5afc52c0d9cbd6de34c1f67f5af43ef91
 
-文件大小: 205276 字节
+文件大小: 203540 字节
 
 
 【怎么用】
