@@ -38,6 +38,10 @@ App 是「壳」，插件是「门」，**两边要配对使用**：只装 App �
 
 明细见 [`plugin/本地修改声明.md`](plugin/本地修改声明.md)。
 
+> **维护约定**：以后以我们自己的补丁版为准。官方出新版时只作参照、重打补丁，
+> **不要用 `dsh plugin update` 或插件页的「更新」直接覆盖**。完整流程见
+> [插件维护规范.md](插件维护规范.md)。
+
 ## 许可与来源声明
 
 电脑端插件是 [shaobeichen/dsh-pocket](https://github.com/shaobeichen/dsh-pocket)（GPL-2.0）的修改副本，
