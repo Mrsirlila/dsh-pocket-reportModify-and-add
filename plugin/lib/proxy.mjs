@@ -957,6 +957,36 @@ export function createPocketProxy({ port = 3081, host = '0.0.0.0', upstream = DE
       (proxyRes) => {
         log?.(`${req.method} ${req.url} -> ${proxyRes.statusCode}`);
         const contentType = String(proxyRes.headers['content-type'] ?? '');
+        // 本补丁（2026-10-25）：dsh web 重启后 launch token 会变，手机 WebView 里那份
+        // dsh-auth-* cookie 就成了陈旧凭据。代理按「带 cookie 就不补 token」处理，上游于是
+        // 回 401「dsh web authentication required」——手机端是一整片黑屏，只能清 App 数据
+        // （等于清 cookie）才恢复。这里替用户把陈旧 cookie 过期掉，并让它重走一次握手：
+        // /?dsh-pocket-auth=1 会强制注入当前 launch token，握手成功后自动回到 `/`。
+        // 只处理浏览器导航（GET + 期望 HTML），且每条链路最多自愈一次，避免来回跳。
+        if (
+          proxyRes.statusCode === 401 &&
+          !didInjectToken &&
+          launchTok !== '' &&
+          req.method === 'GET' &&
+          isHtmlRequest(req) &&
+          !String(req.url ?? '').includes('dsh-pocket-rehandshake')
+        ) {
+          const stale = String(req.headers.cookie ?? '')
+            .split(';')
+            .map((part) => part.trim().split('=')[0])
+            .filter((name) => name.startsWith(DSH_AUTH_COOKIE));
+          if (stale.length) {
+            proxyRes.resume(); // 消费掉上游响应体，释放连接
+            res.writeHead(302, {
+              location: '/?dsh-pocket-auth=1&dsh-pocket-rehandshake=1',
+              'set-cookie': stale.map((name) => `${name}=; Path=/; Max-Age=0; SameSite=Lax`),
+              'cache-control': 'no-store',
+              'x-dsh-pocket-rehandshake': 'stale-cookie',
+            });
+            res.end();
+            return;
+          }
+        }
         // issue #91：我们刚注入了 launch token，上游回 303（换 cookie 后回干净根路径）。
         // Safari 不保存 http://IP 源上 3xx 响应下发的 cookie，于是浏览器下次仍无 cookie
         // → 代理再注入 → 再 303 → 死循环。这里把这次 303 改成 200 过渡页：Set-Cookie
