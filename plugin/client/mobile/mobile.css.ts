@@ -318,6 +318,30 @@ export const MOBILE_CSS = `
     white-space: nowrap !important;
   }
 
+  /* Markdown tables on a phone-sized viewport. Two upstream behaviours clip
+     them: tables with four or more columns get .md-table-wide, whose
+     overflow-x: hidden only flips to scrollable on hover/focus-visible (a
+     touch screen has neither), and every cell keeps min-width: 100px, so a
+     three-column table already grows past a 375px viewport and its last
+     column falls off-screen. Keep the scroll container as a fallback, but let
+     the table fit the viewport and wrap its text. */
+  [data-phase] [class*="_tableScroll_"] {
+    overflow-x: auto !important;
+    max-width: 100% !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  [data-phase] [class*="_tableScroll_"] table {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  [data-phase] [class*="_tableScroll_"] :is(th, td) {
+    min-width: 0 !important;
+    max-width: none !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   [data-phase] [class$="_scroll"]:has(p) {
     padding-left: 20px !important;
     padding-right: 20px !important;
