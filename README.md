@@ -17,26 +17,27 @@ https://www.bilibili.com/video/BV1XaeU65EHJ
 
 ---
 
-## 下载（当前版本 1.37）
+## 下载（当前版本 1.38）
 
 | 文件 | 装在哪 | 说明 |
 |---|---|---|
-| [`DSH掌上版-1.37.apk`](DSH掌上版-1.37.apk) | 手机 | 手机端 App，包名 `com.boss.dshpocket`，最低 Android 7.0，正式密钥签名可直接覆盖升级 |
+| [`DSH掌上版-1.38.apk`](DSH掌上版-1.38.apk) | 手机 | 手机端 App，包名 `com.boss.dshpocket`，最低 Android 7.0，正式密钥签名可直接覆盖升级 |
 | [`dsh-pocket插件-已打补丁.zip`](dsh-pocket插件-已打补丁.zip) | 电脑 | 电脑端插件（解压后照里面的「安装说明-必读.txt」装） |
 | [`使用说明.txt`](使用说明.txt) | — | App 的用法 + 完整更新记录 |
 | [`先读我-包内容说明.txt`](先读我-包内容说明.txt) | — | 整个包的导读 |
 | [`SHA256校验.txt`](SHA256校验.txt) | — | APK 与插件包校验值，下载后可比对 |
-| [`plugin/`](plugin/) | — | 上面那个 zip 的原样源码目录（基于上游 v2.12.0 的五处改动），方便直接看代码与 diff |
+| [`plugin/`](plugin/) | — | 上面那个 zip 的原样源码目录（基于上游 v2.12.0 的六处改动），方便直接看代码与 diff |
 
 App 是「壳」，插件是「门」，**两边要配对使用**：只装 App 不装插件，App 没有东西可连。
 
-本版插件基于上游 **v2.12.0**，改了五处：
+本版插件基于上游 **v2.12.0**，改了六处：
 
 1. 二维码自动带上访问密码（`lib/service.mjs`）
 2. 新增 `/dsh-pocket/entry.json` 入口信息接口（`lib/service.mjs`、`lib/index.js`）
 3. **修复 Windows 上开公网弹控制台黑框、关掉黑框隧道即断的问题**（`lib/tunnel.mjs` 两处 `spawn` 补 `windowsHide: true`）
 4. **修复 DSH 重启后手机端 401 黑屏、必须清 App 数据才能恢复的问题**（`lib/proxy.mjs`：检测到陈旧 `dsh-auth-*` cookie 造成的 401 时，清 cookie 并自动重握手）
 5. **修复手机端 Markdown 表格右侧被裁、滑不动的问题**（`client/mobile/mobile.css.ts` 与其构建产物 `client/client.js`：表格收敛到视口内、单元格允许换行，宽表仍可横滑）
+6. **新增 Tailscale 直连入口**（`lib/service.mjs`、`client/api.js`、`client/index.jsx`、`client/client.js`、`client/pocket-locales.js`：设置页多一块「Tailscale 直连」卡片；100.64/10 在代理里算局域网，免公网密码，跨网点对点，比 cloudflared 快）
 
 明细见 [`plugin/本地修改声明.md`](plugin/本地修改声明.md)。
 

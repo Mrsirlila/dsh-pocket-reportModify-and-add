@@ -112,6 +112,8 @@ function redactStatus(s) {
     tunnelRunning: s?.tunnelRunning === true,
     tunnelUrl: s?.tunnelUrl ?? null,
     tunnelQr: s?.tunnelQr ?? null,
+    tailscaleUrl: s?.tailscaleUrl ?? null,
+    tailscaleQr: s?.tailscaleQr ?? null,
     tunnelState: s?.tunnelState ?? { phase: "idle" },
     tunnelConfig: s?.tunnelConfig ?? { mode: "quick", hostname: "", tokenSet: false },
     dshPort: s?.dshPort ?? null
@@ -2044,6 +2046,9 @@ var zh2 = {
   "lanTitle": "\u{1F4F6} \u5C40\u57DF\u7F51\uFF08\u540C\u4E00 WiFi\uFF09",
   "lanHint": "\u624B\u673A\u8FDE\u63A5\u540C\u4E00 WiFi \u540E\u626B\u7801\u5373\u53EF\u6253\u5F00",
   "lanAccess": "\u5C40\u57DF\u7F51\u8BBF\u95EE",
+  "tailscaleAccess": "Tailscale 直连",
+  "tailscaleP2P": "点对点 · 免公网",
+  "tailscaleHint": "手机与电脑登录同一 Tailscale 账号后扫码（跨网也点对点，速度接近局域网）",
   "lanDisabledHint": "\u{1F512} \u5C40\u57DF\u7F51\u8BBF\u95EE\u5DF2\u5173\u95ED\uFF1A\u624B\u673A\u626B\u7801/\u94FE\u63A5\u5747\u4E0D\u53EF\u7528\uFF08\u516C\u7F51\u4E0D\u53D7\u5F71\u54CD\uFF09\u3002\u70B9\u300C\u5F00\u300D\u6062\u590D\u3002",
   "lanToggleTitleOff": "\u5173\u95ED\u5C40\u57DF\u7F51\u8BBF\u95EE",
   "lanToggleBodyOff": "\u5173\u95ED\u540E\uFF0C\u540C\u4E00 WiFi \u4E0B\u7684\u624B\u673A\u5C06\u65E0\u6CD5\u626B\u7801\u8BBF\u95EE\uFF08\u5C40\u57DF\u7F51\u4E8C\u7EF4\u7801/\u94FE\u63A5\u7ACB\u5373\u5931\u6548\uFF09\u3002\u516C\u7F51\u8BBF\u95EE\u4E0D\u53D7\u5F71\u54CD\u3002\u786E\u5B9A\u5173\u95ED\uFF1F",
@@ -2142,6 +2147,9 @@ var en2 = {
   "lanTitle": "\u{1F4F6} LAN (same Wi-Fi)",
   "lanHint": "Scan to open once your phone is on the same Wi-Fi",
   "lanAccess": "LAN access",
+  "tailscaleAccess": "Tailscale",
+  "tailscaleP2P": "peer-to-peer",
+  "tailscaleHint": "Sign in to the same Tailscale account on both devices, then scan (peer-to-peer, as fast as LAN)",
   "lanDisabledHint": '\u{1F512} LAN access is off \u2014 the QR code and link are unavailable (public access is unaffected). Tap "On" to restore.',
   "lanToggleTitleOff": "Turn off LAN access",
   "lanToggleBodyOff": "Once off, phones on the same Wi-Fi can no longer scan to connect (the LAN QR code and link stop working immediately). Public access is unaffected. Turn it off?",
@@ -2667,6 +2675,22 @@ function PocketSettingsTab({ rpcCall, t }) {
         )
       ) : (0, import_react2.createElement)("div", { style: styles.muted }, t("lanStarting"))
     ),
+    // Tailscale：只有装了并登录同一 tailnet 才出现；跨网点对点直连，比 cloudflared 快
+    status?.tailscaleUrl ? (0, import_react2.createElement)(
+      "div",
+      { style: styles.block },
+      (0, import_react2.createElement)(
+        "div",
+        { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+        (0, import_react2.createElement)("span", { style: { fontWeight: 600, fontSize: 13 } }, t("tailscaleAccess")),
+        (0, import_react2.createElement)("span", { style: { fontSize: 11, color: "var(--dsw-alias-state-success-primary,#15803d)" } }, t("tailscaleP2P"))
+      ),
+      (0, import_react2.createElement)(
+        "div",
+        null,
+        qrArea(status.tailscaleQr, status.tailscaleUrl, t("tailscaleHint"))
+      )
+    ) : null,
     // 公网：标题行自带 开启/关闭 → 开启后：二维码+地址、地址模式行、访问密码行
     (0, import_react2.createElement)(
       "div",

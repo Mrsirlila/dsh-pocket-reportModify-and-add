@@ -80,6 +80,33 @@ export function selectLanIPv4(interfaces) {
   return candidates[0]?.ip ?? null;
 }
 
+/**
+ * Tailscale 入口地址。
+ *
+ * 用户跨网时直接用 `http://<tailscale-ip>:3081` 就能像局域网一样访问（点对点 WireGuard，
+ * 不经过 Cloudflare 边缘），比 cloudflared 快很多。这里只认三件事同时成立：
+ *   1. 网卡名以 `Tailscale` 开头（Windows/macOS/Linux 都是这个名字）；
+ *   2. IPv4 且非 internal；
+ *   3. 落在 CGNAT 100.64.0.0/10（RFC 6598）——Tailscale 固定用这段，而它公网不可路由，
+ *      因此 proxy 的 classifyHost 也会把这类 Host 判成 lan（见 lib/proxy.mjs），
+ *      于是访问行为与局域网入口完全一致（按「局域网访问」开关与密码走）。
+ *
+ * 找不到就返回 null（没装 Tailscale 或未登录时不影响原有入口）。
+ * @param {ReturnType<typeof networkInterfaces>} interfaces
+ * @returns {string|null}
+ */
+export function tailscaleIPv4(interfaces = networkInterfaces()) {
+  const CGNAT_RE = /^100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./;
+  for (const [name, addrs] of Object.entries(interfaces ?? {})) {
+    if (!/^tailscale/i.test(name)) continue;
+    for (const addr of addrs ?? []) {
+      if (addr.family !== 'IPv4' || addr.internal) continue;
+      if (CGNAT_RE.test(addr.address)) return addr.address;
+    }
+  }
+  return null;
+}
+
 // ---------- WSL 局域网 IP（issue #39） ----------
 // WSL2 是 NAT 模式：WSL 内部 os.networkInterfaces() 只能看到自己的虚拟网卡
 // （172.x.x.x），看不到 Windows 宿主机的物理网卡 IP（192.168.x.x）——手机在
@@ -447,6 +474,8 @@ export function createPocketService({
     async entryInfo() {
       const lan = await getLan();
       const lanUrl = lan && proxy?.port ? `http://${lan}:${proxy.port}` : null;
+      const tsIp = internals.tailscaleIPv4 ? internals.tailscaleIPv4() : tailscaleIPv4();
+      const tailscaleUrl = tsIp && proxy?.port ? `http://${tsIp}:${proxy.port}` : null;
       const publicUrl = tunnel?.url ?? null;
       let publicPin = '';
       try {
@@ -456,7 +485,7 @@ export function createPocketService({
       } catch {
         publicPin = '';
       }
-      return { lanUrl, publicUrl, publicPin };
+      return { lanUrl, tailscaleUrl, publicUrl, publicPin };
     },
 
     /** 状态快照（RPC 返回，不含敏感信息；二维码 data URL 本地生成 + 缓存）。 */
@@ -467,6 +496,8 @@ export function createPocketService({
       const lanIpOverride = getLanOverride();
       const lanCandidates = [...new Set(await getLanCandidates())];
       if (lanIpOverride && !lanCandidates.includes(lanIpOverride)) lanCandidates.push(lanIpOverride);
+      const tsIp = internals.tailscaleIPv4 ? internals.tailscaleIPv4() : tailscaleIPv4();
+      const tailscaleUrl = tsIp && proxyPort ? `http://${tsIp}:${proxyPort}` : null;
       const tunnelUrl = tunnel?.url ?? null;
       let tunnelHost = null;
       try {
@@ -482,6 +513,8 @@ export function createPocketService({
         lanCandidates,
         lanIpOverride,
         tunnelRunning: tunnel !== null,
+        tailscaleUrl,
+        tailscaleQr: await qrCached(qrTextFor(tailscaleUrl, tsIp)),
         tunnelUrl,
         tunnelQr: await qrCached(qrTextFor(tunnelUrl, tunnelHost)),
         tunnelState: { ...tunnelState },

@@ -488,6 +488,15 @@ function PocketSettingsTab({ rpcCall, t }) {
           : h('div', { style: styles.muted }, t('lanStarting'))),
     ),
 
+    // Tailscale：只有装了并登录同一 tailnet 才会出现（跨网点对点直连，比 cloudflared 快）
+    status?.tailscaleUrl ? h('div', { style: styles.block },
+      h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+        h('span', { style: { fontWeight: 600, fontSize: 13 } }, t('tailscaleAccess')),
+        h('span', { style: { fontSize: 11, color: 'var(--dsw-alias-state-success-primary,#15803d)' } }, t('tailscaleP2P')),
+      ),
+      h('div', null, qrArea(status.tailscaleQr, status.tailscaleUrl, t('tailscaleHint'))),
+    ) : null,
+
     // 公网：标题行自带 开启/关闭 → 开启后：二维码+地址、地址模式行、访问密码行
     h('div', { style: styles.block },
       h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },

@@ -69,6 +69,9 @@ export function redactStatus(s) {
     tunnelRunning: s?.tunnelRunning === true,
     tunnelUrl: s?.tunnelUrl ?? null,
     tunnelQr: s?.tunnelQr ?? null,
+    // Tailscale 入口（同 tailnet 内点对点直连；未装/未登录时为 null）
+    tailscaleUrl: s?.tailscaleUrl ?? null,
+    tailscaleQr: s?.tailscaleQr ?? null,
     tunnelState: s?.tunnelState ?? { phase: 'idle' },
     tunnelConfig: s?.tunnelConfig ?? { mode: 'quick', hostname: '', tokenSet: false },
     dshPort: s?.dshPort ?? null,
