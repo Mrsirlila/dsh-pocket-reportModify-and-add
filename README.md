@@ -39,6 +39,11 @@ App 是「壳」，插件是「门」，**两边要配对使用**：只装 App �
 5. **修复手机端 Markdown 表格右侧被裁、滑不动的问题**（`client/mobile/mobile.css.ts` 与其构建产物 `client/client.js`：表格收敛到视口内、单元格允许换行，宽表仍可横滑）
 6. **新增 Tailscale 直连入口**（`lib/service.mjs`、`client/api.js`、`client/index.jsx`、`client/client.js`、`client/pocket-locales.js`：设置页多一块「Tailscale 直连」卡片；100.64/10 在代理里算局域网，免公网密码，跨网点对点，比 cloudflared 快）
 
+> **为什么加 Tailscale**：公网隧道走 Cloudflare 中转，高峰期延迟和抖动都不稳定。
+> 插件新增 Tailscale 链接功能后，手机和电脑登录同一个 tailnet 就能**点对点直连**——
+> 不经过第三方中转、跨网也接近局域网速度，日常使用更稳定；公网隧道保留作为兜底，
+> 三条链路（局域网 → Tailscale → 公网）由 App 自动择优。
+
 明细见 [`plugin/本地修改声明.md`](plugin/本地修改声明.md)。
 
 > **维护约定**：以后以我们自己的补丁版为准。官方出新版时只作参照、重打补丁，
