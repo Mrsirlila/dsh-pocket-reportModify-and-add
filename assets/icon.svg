@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="dsh-pocket-plus">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5b9bff"/>
+      <stop offset="55%" stop-color="#6f7bff"/>
+      <stop offset="100%" stop-color="#9a6bff"/>
+    </linearGradient>
+    <linearGradient id="dot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e8eeff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="228" fill="url(#bg)"/>
+
+  <!-- 口袋 -->
+  <path d="M300 392 H724 V548 A212 212 0 0 1 300 548 Z" fill="url(#dot)"/>
+
+  <!-- 口袋上沿缝线 -->
+  <path d="M336 432 H688" stroke="url(#bg)" stroke-width="22" stroke-linecap="round" stroke-dasharray="1 44" opacity="0.75"/>
+
+  <!-- 三条链路：由下至上递增 -->
+  <circle cx="424" cy="612" r="30" fill="url(#bg)"/>
+  <circle cx="512" cy="556" r="30" fill="url(#bg)" opacity="0.82"/>
+  <circle cx="600" cy="500" r="30" fill="url(#bg)" opacity="0.64"/>
+</svg>
