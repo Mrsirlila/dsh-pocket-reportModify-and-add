@@ -972,6 +972,19 @@ var MOBILE_CSS = `
     overflow-wrap: anywhere;
     word-break: break-word;
   }
+  /* Option buttons inside a question card (and any other in-message button
+     with a long label) are laid out as one clipped line by default, so an
+     option whose text is longer than the screen width becomes unreadable.
+     Let them wrap and grow with their content instead. */
+  [data-phase] button,
+  [data-phase] [role="button"],
+  [role="dialog"] button,
+  [role="dialog"] [role="button"] {
+    white-space: normal !important;
+    height: auto !important;
+    min-height: 32px;
+    line-height: 1.45;
+  }
 
   [data-phase] [class$="_scroll"]:has(p) {
     padding-left: 20px !important;

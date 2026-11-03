@@ -17,11 +17,11 @@ https://www.bilibili.com/video/BV1XaeU65EHJ
 
 ---
 
-## 下载（当前版本 1.39）
+## 下载（当前版本 1.40）
 
 | 文件 | 装在哪 | 说明 |
 |---|---|---|
-| [`DSH掌上版-1.39.apk`](DSH掌上版-1.39.apk) | 手机 | 手机端 App，包名 `com.boss.dshpocket`，最低 Android 7.0，正式密钥签名可直接覆盖升级 |
+| [`DSH掌上版-1.40.apk`](DSH掌上版-1.40.apk) | 手机 | 手机端 App，包名 `com.boss.dshpocket`，最低 Android 7.0，正式密钥签名可直接覆盖升级 |
 | [`dsh-pocket插件-已打补丁.zip`](dsh-pocket插件-已打补丁.zip) | 电脑 | 电脑端插件（解压后照里面的「安装说明-必读.txt」装） |
 | [`使用说明.txt`](使用说明.txt) | — | App 的用法 + 完整更新记录 |
 | [`先读我-包内容说明.txt`](先读我-包内容说明.txt) | — | 整个包的导读 |
